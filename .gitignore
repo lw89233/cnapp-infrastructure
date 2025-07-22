@@ -1,0 +1,2 @@
+# Ignore manifest file with real secrets
+k8s/00-mysql-deployment.yaml

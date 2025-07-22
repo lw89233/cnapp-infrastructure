@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: file-transfer-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-transfer-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: file-transfer-service
+  template:
+    metadata:
+      labels:
+        app: file-transfer-service
+    spec:
+      containers:
+      - name: file-transfer-container
+        image: lw89233/file-transfer:latest
+        ports:
+        - containerPort: 8004
+        env:
+        - name: FILE_TRANSFER_MICROSERVICE_PORT
+          value: "8004"
+        volumeMounts:
+        - name: file-storage
+          mountPath: /app/files
+      volumes:
+      - name: file-storage
+        persistentVolumeClaim:
+          claimName: file-transfer-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-transfer-service
+spec:
+  selector:
+    app: file-transfer-service
+  ports:
+  - protocol: TCP
+    port: 8004
+    targetPort: 8004
