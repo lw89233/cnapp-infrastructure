@@ -15,7 +15,7 @@ spec:
       initContainers:
       - name: wait-for-mysql
         image: busybox:1.28
-        command: ['sh', '-c', 'until nc -z mysql-service 3306; do echo "Czekam na bazę danych..."; sleep 2; done;']
+        command: ['sh', '-c', 'until nc -z -w 5 mysql-service 3306; do echo "Czekam na bazę danych..."; sleep 2; done;']
       containers:
       - name: posts-container
         image: lw89233/posts:latest
