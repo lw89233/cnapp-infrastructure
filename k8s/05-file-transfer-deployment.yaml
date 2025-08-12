@@ -15,7 +15,7 @@ kind: Deployment
 metadata:
   name: file-transfer-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: file-transfer-service
@@ -32,6 +32,23 @@ spec:
         env:
         - name: FILE_TRANSFER_MICROSERVICE_PORT
           value: "8004"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "250m"
+            memory: "128Mi"
+        readinessProbe:
+          tcpSocket:
+            port: 8004
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8004
+          initialDelaySeconds: 15
+          periodSeconds: 20
         volumeMounts:
         - name: file-storage
           mountPath: /app/files
